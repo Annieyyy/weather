@@ -54,8 +54,6 @@ export default class weather extends Component {
     }
 
     findDate=(list) =>{
-        // console.log('list', this.state.list);
-        
         var weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
         const dates = list.map((item, i) => {
              return item.dt_txt.split(" ")[0];
@@ -67,12 +65,10 @@ export default class weather extends Component {
             day[i] = weekdays[new Date(dates[i]).getDay()];
 
         }
-        // console.log(day);
         return day;
     }
 
     findtemp=(list)=>{
-        // console.log("temp:",list[0]['main']['temp']);
         var newlist = new Array(5);
         for(var j =0; j<5; j++){
             newlist[j] = 0;
