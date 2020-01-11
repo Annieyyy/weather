@@ -15,7 +15,6 @@ export default class weather extends Component {
             findtemp: [],
             celsius: undefined,
             date: [],
-            // temperature: undefined,
             error: undefined
 
         }
@@ -87,7 +86,6 @@ export default class weather extends Component {
             newlist[a] /= 8;
             newlist[a] -= 273.15;
         }
-        // console.log("a:",  Math.floor(newlist));
         var b = 0;
         while(b < 5){
             newlist[b] = newlist[b].toFixed(2);
@@ -114,20 +112,19 @@ export default class weather extends Component {
                 <button>Get Weather</button>
               </form>
               { this.state.loading ?
-              <Form
-                city ={this.state.city}
-                celsiusDay1 ={this.state.celsius[0]}
-                celsiusDay2 = {this.state.celsius[1]}
-                celsiusDay3 = {this.state.celsius[2]}
-                celsiusDay4 = {this.state.celsius[3]}
-                celsiusDay5 = {this.state.celsius[4]}
-                date1 = {this.state.date[0]}
-                date2 = {this.state.date[1]}
-                date3 = {this.state.date[2]}
-                date4 = {this.state.date[3]}
-                date5 = {this.state.date[4]}
-              /> : null}
-            {/* <div className="output"> City: {this.state.city}</div> */}
+                <Form
+                    city ={this.state.city}
+                    celsiusDay1 ={this.state.celsius[0]}
+                    celsiusDay2 = {this.state.celsius[1]}
+                    celsiusDay3 = {this.state.celsius[2]}
+                    celsiusDay4 = {this.state.celsius[3]}
+                    celsiusDay5 = {this.state.celsius[4]}
+                    date1 = {this.state.date[0]}
+                    date2 = {this.state.date[1]}
+                    date3 = {this.state.date[2]}
+                    date4 = {this.state.date[3]}
+                    date5 = {this.state.date[4]}
+                /> : null}
           </div>
 
 
