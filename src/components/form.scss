@@ -1,0 +1,18 @@
+.formContainer{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .card{
+        margin: 10px 20px;
+        width: 10rem;
+        .list-group{
+            .list-group-item{
+                border: none!important;
+                background-color: whitesmoke;
+                text-align: center;
+            }
+        }
+    }
+}
+

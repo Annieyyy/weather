@@ -1,8 +1,6 @@
 import React from 'react';
-// import logo from './logo.svg';
-// import './App.css';
-// import Form from './components/form.js';
 import Weather from './components/weather.js';
+import 'bootstrap/dist/css/bootstrap.min.css';
 function App() {
   return (
     <div>

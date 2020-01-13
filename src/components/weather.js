@@ -1,6 +1,7 @@
 import React,{Component} from 'react';
-import './weather.css';
+import './weather.scss';
 import Form from './form.js';
+import { Button } from 'react-bootstrap';
 
 const APIKEY ="8f95342839eba25e1121275e142e4225";
 
@@ -12,72 +13,109 @@ export default class weather extends Component {
             loading: false,
             city: undefined,
             list:[],
-            findtemp: [],
             celsius: undefined,
             date: [],
+            weather:[],
+            iconlist:[],
+            icon: undefined,
             error: undefined
-
+        };
+        this.weathericon = {
+            sunny:"wi-day-sunny",
+            cloudy:"wi-cloudy",
+            rain:"wi-rain",
+            snow:"wi-snow"
         }
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
-    async getWeather (city){
-        console.log(city);
-        const url = `http://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${APIKEY}`;
-        const response = await fetch(url);
-        const data = await response.json();
-        console.log(data);
-        this.setState({
-            city: data.city.name,
-            loading: true,
-            list: data.list,
-            celsius: this.findtemp(data.list),
-            date: this.findDate(data.list),
-            weather: this.findWeather(data.list),
-            error: " "
+    async getWeather(city){
+        try{
+            const url = `http://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${APIKEY}`;
+            const response = await fetch(url);
+            const data = await response.json();
+            this.setState({
+                city: data.city.name,
+                loading: true,
+                list: data.list,
+                celsius: this.findtemp(data.list),
+                date: this.findDate(data.list),
+                weather: this.findWeather(data.list),
+                error: " "
             })
-            console.log("list:",this.state.list);
-            console.log("celsius:",this.state.celsius);
-
-    }
-    findWeather=(list) =>{
-        console.log("weather:",list[0]['weather'][0]['main']);
-
-        var newWeather = new Array(5);
-        for(var j =0; j<5; j++){
-            newWeather[j] = 0;
+            var iconlist = [0,0,0,0,0];
+            for(var x=0; x<5; x++){
+                this.getIcon(this.weathericon,this.state.weather[x]);
+                iconlist[x] = this.state.icon;
+            }
+            this.setState({ iconlist : iconlist});
+        }catch{
+            this.setState({
+                error:"*Please enter the city",
+                loading: false
+            })
         }
-        for(var i=0; i< list.length; i++){
-            newWeather[i] = list[i]['weather'][0]['main'];
-        }
-        console.log(newWeather);
     }
 
-    findDate=(list) =>{
+    getIcon=(icons,weather)=>{
+        switch(weather){
+            case 'Clouds': 
+                this.setState({ icon: icons.cloudy });
+                break;
+            case 'Snow': 
+                this.setState({ icon: icons.snow });
+                break;
+            case 'Rain': 
+                this.setState({ icon: icons.rain });
+                break;
+            case 'Clear': 
+                this.setState({ icon: icons.sunny });
+                break;
+            default:  
+            break;
+        }
+    }
+    findWeather=(list)=>{;
+        var newlist = [];
+        var newWeather = [];
+        for(var a=0; a<list.length; a+=8){
+            newlist.push(list.slice(a,a+8));           
+        }
+        var obj = {};
+        var maxWeather;
+        var maxNum = 0;
+        for(var i=0; i<newlist.length; i++){
+            for(var j=0;j<8;j++){
+                var index = newlist[i][j]['weather'][0]['main'];
+                obj[index] === undefined ? obj[index] = 1 : obj[index]++;
+                if(obj[index] > maxNum){
+                    maxWeather = index;
+                    maxNum = obj[index];
+                } 
+            }
+            newWeather[i] = maxWeather;
+        }
+        return newWeather;
+    }
+
+    findDate=(list)=>{
         var weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
         const dates = list.map((item, i) => {
              return item.dt_txt.split(" ")[0];
         }).filter((item, i, arr) => { return arr.indexOf(item) === i; });
 
-        console.log('dates', dates);
         var day = new Array(dates.length);
         for(var i=0; i<dates.length; i++){
             day[i] = weekdays[new Date(dates[i]).getDay()];
-
         }
         return day;
     }
 
     findtemp=(list)=>{
-        var newlist = new Array(5);
-        for(var j =0; j<5; j++){
-            newlist[j] = 0;
-        }
-        console.log(newlist);
-        for(var i=0; i< list.length; i++){
+        var newlist=[0,0,0,0,0];
+        for(var i=0; i<list.length; i++){
             newlist[Math.floor(i / 8)] += list[i]['main']['temp'];
         }
-        console.log("list:", newlist);
         for(var a in newlist){
             newlist[a] /= 8;
             newlist[a] -= 273.15;
@@ -90,41 +128,34 @@ export default class weather extends Component {
         return newlist;
     }
 
-        handleSubmit=(e) =>{
-            e.preventDefault();
-            this.getWeather(e.target.city.value);
-
-        }
-        render() {
+    handleSubmit=(e)=>{
+        e.preventDefault();
+        this.getWeather(e.target.city.value);
+    }
+    render() {
         return (
-          <div>
-              <form onSubmit={this.handleSubmit}>
-                <input
-                  type="text"
-                  name="city"
-                  placeholder="Search a City..."
-                  ref="city"
-                />
-                <button>Get Weather</button>
-              </form>
-              { this.state.loading ?
+          <div className="container">
+                <form onSubmit={this.handleSubmit}> 
+                    <div className="top">
+                        <div className="formGroup">
+                            <input
+                                className="cityInput"
+                                type="text"
+                                name="city"
+                                placeholder="Search a city"
+                            />
+                            <Button className="btn" type="submit" variant="secondary">Get Weather</Button>
+                        </div>
+                        <div className="error">{this.state.error}</div>
+                    </div>
+                </form>
+                { this.state.loading ?
                 <Form
-                    city ={this.state.city}
-                    celsiusDay1 ={this.state.celsius[0]}
-                    celsiusDay2 = {this.state.celsius[1]}
-                    celsiusDay3 = {this.state.celsius[2]}
-                    celsiusDay4 = {this.state.celsius[3]}
-                    celsiusDay5 = {this.state.celsius[4]}
-                    date1 = {this.state.date[0]}
-                    date2 = {this.state.date[1]}
-                    date3 = {this.state.date[2]}
-                    date4 = {this.state.date[3]}
-                    date5 = {this.state.date[4]}
+                    celsiusDay ={ this.state.celsius}
+                    date = {this.state.date}
+                    icon= {this.state.iconlist}
                 /> : null}
-          </div>
-
-
-        )
-
+            </div>
+        )             
       };
     }
