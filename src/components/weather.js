@@ -34,6 +34,7 @@ export default class weather extends Component {
             const url = `http://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${APIKEY}`;
             const response = await fetch(url);
             const data = await response.json();
+            
             this.setState({
                 city: data.city.name,
                 loading: true,
@@ -99,14 +100,14 @@ export default class weather extends Component {
     }
 
     findDate=(list)=>{
-        var weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        var weekdays = ["Sunday","Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
         const dates = list.map((item, i) => {
              return item.dt_txt.split(" ")[0];
         }).filter((item, i, arr) => { return arr.indexOf(item) === i; });
 
         var day = new Array(dates.length);
         for(var i=0; i<dates.length; i++){
-            day[i] = weekdays[new Date(dates[i]).getDay()];
+            day[i] = weekdays[new Date(Date.parse(dates[i].replace(/-/g, "/"))).getDay()];
         }
         return day;
     }
